@@ -1,0 +1,18 @@
+domains:
+    - cs.LG
+    - stat.ML
+keywords:
+    - (all:graph) AND (all:unsupervised OR all:self-supervised OR all:representation learning OR all:convolutional networks)
+    - (all:graph) AND (all:recommendation OR all:recommender OR all:sequential)
+query_config:
+    sort_by: lastUpdatedDate
+    sort_order: descending
+    max_results: 10
+    start: 0
+mail:
+    user: example@server.com
+    server: smtp.server.com
+    port: 465
+    password: password
+    recipient:
+        - me@hello.com
