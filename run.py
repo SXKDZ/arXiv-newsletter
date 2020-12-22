@@ -36,7 +36,12 @@ def build_content(config):
 
     for i, keyword in enumerate(keywords):
         query = build_query(domains, keyword)
-        results = arxiv.query(query=query, **query_config)
+        while True:
+            try:
+                results = arxiv.query(query=query, **query_config)
+                break
+            except:
+                pass
         entries = ''
         for j, result in enumerate(results):
             entry = entry_placeholder.format(
