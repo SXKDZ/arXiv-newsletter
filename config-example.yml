@@ -1,9 +1,16 @@
-domains:
-    - cs.LG
-    - stat.ML
-keywords:
-    - (all:graph) AND (all:unsupervised OR all:self-supervised OR all:representation learning OR all:convolutional networks)
-    - (all:graph) AND (all:recommendation OR all:recommender OR all:sequential)
+recipients:
+    - recipient: me1@hello.com
+      domains:
+        - cs.LG
+        - stat.ML
+      keywords:
+        - (all:graph) AND (all:unsupervised OR all:self-supervised OR all:representation learning OR all:convolutional networks)
+        - (all:graph) AND (all:recommendation OR all:recommender OR all:sequential)
+    - recipient: me2@hello.com
+      domains:
+        - cs.MM
+      keywords:
+        - (all:cross-modal OR all:multi-modal) AND all:retrieval and representation
 query_config:
     sort_by: LastUpdatedDate
     sort_order: Descending
@@ -13,5 +20,3 @@ mail:
     server: smtp.server.com
     port: 465
     password: password
-    recipient:
-        - me@hello.com

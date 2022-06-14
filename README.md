@@ -5,7 +5,7 @@ A simple configurable bot for sending arXiv article alert by mail.
 
 ```
 PyYAML>=5.3.1
-arxiv>=0.5.3
+arxiv>=1.4.0
 ```
 
 ## Configuration
