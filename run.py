@@ -3,7 +3,6 @@ import yaml
 import arxiv
 import smtplib, ssl
 
-from arxiv import SortCriterion, SortOrder
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
 from datetime import date
@@ -23,10 +22,9 @@ def build_query(domains, keyword):
     return query
 
 
-def build_content(config):
-    domains = config['domains']
-    keywords = config['keywords']
-    query_config = config['query_config']
+def build_content(query, query_config):
+    domains = query['domains']
+    keywords = query['keywords']
 
     messages = []
 
@@ -36,16 +34,14 @@ def build_content(config):
     )
     template = env.get_template("template.html")
 
-    total_mail = len(config['keywords'])
+    total_mail = len(query['keywords'])
     subject_placeholder = 'arXiv newsletter ' + str(today) + ' {index}/' + str(total_mail)
 
     for i, keyword in enumerate(keywords):
         query = build_query(domains, keyword)
         results = arxiv.Search(
             query=query,
-            sort_by=SortCriterion[query_config['sort_by']],
-            sort_order=SortOrder[query_config['sort_order']],
-            max_results=query_config['max_results'])
+            **query_config)
 
         newsletter = {
             'index': i + 1,
@@ -80,28 +76,35 @@ def send_mail(config):
     port = mail_config['port']
     sender = mail_config['user']
     password = mail_config['password']
+
+    query_config = config['query_config']
+    query_config['sort_by'] = arxiv.SortCriterion._member_map_[query_config['sort_by']]
+    query_config['sort_order'] = arxiv.SortOrder._member_map_[query_config['sort_order']]
+
     context = ssl.create_default_context()
 
-    messages = build_content(config)
-    for recipient in mail_config['recipient']:
+    for recipient in config['recipients']:
+        messages = build_content(query=recipient, query_config=query_config)
+
         for i, each_message in enumerate(messages):
             subject, content = each_message
 
             message = MIMEMultipart('alternative')
             message['subject'] = subject
-            message['To'] = recipient
+            message['To'] = recipient['recipient']
             message['From'] = f'arXiv-bot <{sender}>'
 
             body = MIMEText(content, 'html')
             message.attach(body)
 
             print(subject)
-            with open(f'{today}/{i + 1}.txt', 'w+') as f:
+            # print(message)
+            with open(f'{today}/{recipient["recipient"]}_{i + 1}.txt', 'w+') as f:
                 f.write(message.as_string())
             try:
                 with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
                     server.login(sender, password)
-                    server.sendmail(sender, recipient, message.as_string())
+                    server.sendmail(sender, recipient['recipient'], message.as_string())
             except smtplib.SMTPDataError as e:
                 print(e.smtp_error)
                 print()
